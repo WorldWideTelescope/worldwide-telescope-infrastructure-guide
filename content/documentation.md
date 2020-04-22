@@ -27,7 +27,17 @@ needed.
 [Zola]: https://www.getzola.org/
 
 Certain other WWT websites that aren’t quite “documentation”, such as the
-[Documentation Hub][docs.wwt.o] page, are also generated using Zola.
+[Documentation Hub][docs.wwt.o] index page, are also generated using Zola.
+
+
+# docs.worldwidetelescope.org
+
+Most WWT documentation is served off of the
+[docs.worldwidetelescope.org][docs.wwt.o] domain. This domain is essentially a
+purely static website — the domain is a CDN endpoint that serves content off
+of `_docs` subdirectory of the `wwtwebstatic` Azure Storage account associated
+with the WWT Azure subscription. Content is updated on this storage account
+using the CI/CD process described below.
 
 
 # WWT Guide Zola Theme
@@ -57,7 +67,8 @@ Deployment of WWT guides and manuals follows the general scheme seen elsewhere
 in the project. Merges to the `master` branch of most documentation
 repositories trigger a CI/CD pipeline that runs Zola and uploads the generated
 files to a WWT Azure Storage account that then serves the files as a static
-website.
+website. For most guides this is the `wwtwebstatic` account backing
+[docs.worldwidetelescope.org][docs.wwt.o] as described above.
 
 The details of the CI/CD pipeline for guides are also tracked in the
 [zola-wwtguide] repository, in the file [azure-build-and-publish.yml]. The
@@ -70,8 +81,3 @@ GitHub — the specific commit referenced in the `themes/wwtguide` submodule
 does not come into play.
 
 [azure-build-and-publish.yml]: https://github.com/WorldWideTelescope/zola-wwtguide/blob/master/azure-build-and-publish.yml
-
-For documents served off of the [docs.worldwidetelescope.org][docs.wwt.o]
-domain, the storage account is the `wwtwebstatic` account, inside a `_docs`
-subdirectory. The actual [docs.worldwidetelescope.org][docs.wwt.o] is mapped
-to a CDN endpoint that fetches and caches content from the storage account.
