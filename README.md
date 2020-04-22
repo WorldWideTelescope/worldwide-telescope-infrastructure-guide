@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/aasworldwidetelescope/WWT/_apis/build/status/WorldWideTelescope.worldwide-telescope-infrastructure-guide?branchName=master)](https://dev.azure.com/aasworldwidetelescope/WWT/_build/latest?definitionId=18&branchName=master)
+
 # WWT Infrastructure Guide: Source Code
 
 This repository contains the source code for the [WWT Infrastructure Guide].
