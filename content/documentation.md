@@ -7,10 +7,11 @@ WWT documentation, such as the page that you’re reading right now, is
 version-controlled in the [WWT GitHub organization][github-org] just like any
 other project assets. The WWT documentation was historically split among
 several documents, and the current collection has synthesized many different
-materials, and so the number of repositories is substantial. The
-[Documentation Hub][docs.wwt.o] attempts to provide an exhaustive list of
-documents, with links to source repositories found in each document’s
-navigation links.
+materials, and so the number of repositories is substantial. For historical
+reasons, the names of documentation repositories generally start with
+`worldwide-telescope-`. The [Documentation Hub][docs.wwt.o] attempts to
+provide an exhaustive list of documents, with links to source repositories
+found in each document’s navigation links.
 
 [github-org]: https://github.com/WorldWideTelescope/
 [docs.wwt.o]: https://docs.worldwidetelescope.org/
