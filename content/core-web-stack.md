@@ -217,7 +217,7 @@ except that the response may hopefully arrive faster if the user is near one
 of the CDN point-of-presence nodes and it has already cached the relevant
 content.
 
-[cdn]: https://www.cloudflare.com/learning/cdn/what-is-a-cdn/
+[cdn]: https://en.wikipedia.org/wiki/Content_delivery_network
 
 Because this CDN frontend is expected to serve content for arbitrary URL paths
 at exposed by the [worldwidetelescope.org] origin, CDN requests must be routed

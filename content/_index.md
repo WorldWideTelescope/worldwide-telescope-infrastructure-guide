@@ -18,4 +18,4 @@ If your topic is missing, try asking on the [WWT Forum] instead.
 
 Without further ado, let’s proceed to [the overview](@/overview.md)!
 
-[WWT Forum]: https://wwt-forums.org/
+[WWT Forum]: https://wwt-forum.org/
