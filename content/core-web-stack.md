@@ -3,7 +3,7 @@ title = "Core Web Stack"
 weight = 300
 +++
 
-Unlike applications that live only on the Web, WWT has an installed based of
+Unlike applications that live only on the Web, WWT has an installed base of
 Windows clients some of which are more than a decade old. Some of those
 Windows clients are installed at planetariums or museums that are using WWT in
 public-facing exhibits but, generally speaking, very reluctant to experiment
