@@ -99,10 +99,12 @@ Now the graphical setup can begin:
    &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\VSIXInstaller.exe" plugin.zip
    ```
 1. Probably doesn't hurt to reboot again.
+1. Apply [the fix for the HRESULT = 8000000A error][hresult-error]
 
 [vs-community]: https://visualstudio.microsoft.com/vs/community/
 [ms-vdproj]: https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2017InstallerProjects
 [vsix-post]: https://developercommunity.visualstudio.com/content/problem/596629/vsixinstaller-from-vs-2019-closing-with-runfromeng.html
+[hresult-error]: https://stackoverflow.com/a/41788791/3760486
 
 
 # Set up the VM as a Build Agent
