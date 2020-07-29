@@ -51,9 +51,9 @@ hand.
      --resource-group devops-support \
      --name hostedagentbox \
      --image Win2019Datacenter \
+     --size Standard_D2_v3 \
      --admin-username wwt \
-     --admin-password $PASSWORD \
-     --size $VM_SIZE
+     --admin-password $PASSWORD
    ```
    The password must be at least twelve characters, one upper/lower/number/special.
    The machine name cannot be more than 15 characters. For the setup phase, it’s
@@ -63,24 +63,26 @@ hand.
 It should now be possible to RDP into the machine. On Linux, something like:
 
 ```
-xfreerdp /u:wwt /d:. /v:$IP_ADDR:3389 /size:1280x960
+xfreerdp /u:wwt /v:$IP_ADDR:3389 /size:1280x960
 ```
 
 Now the graphical setup can begin:
 
+1. Turn off network discoverability when prompted upon login
+1. In the Server Manager, go to "Local Server", then click on "IE Enhanced
+   Security Configuration". Turn the settings to off. Otherwise, IE literally
+   won't allow you to download files without jumping through a lot of hoops.
+   ([Ref][ie-esc]).
 1. Navigate to the [Visual Studio Community][vs-community] downloads page.
-1. In IE, go to "Internet Settings", then "Security", and add the current
-   webpage as a Trusted website. Otherwise IE doesn’t let you download
-   anything. Seriously!
 1. Download the `vs_community.exe` installer stub.
 1. Run it in an elevated Powershell (which should be the default kind, since
    we’re logged in as the admin user):
    ```
-   vs_community.exe --allWorkloads --includeRecommended --passive ^
-      --add Microsoft.Net.Component.4.7.SDK ^
-      --add Microsoft.Net.Component.4.7.TargetingPack ^ 
-      --add Microsoft.Net.Component.4.6.2.SDK ^
-      --add Microsoft.Net.Component.4.6.2.TargetingPack ^
+   vs_community.exe --allWorkloads --includeRecommended --passive `
+      --add Microsoft.Net.Component.4.7.SDK `
+      --add Microsoft.Net.Component.4.7.TargetingPack `
+      --add Microsoft.Net.Component.4.6.2.SDK `
+      --add Microsoft.Net.Component.4.6.2.TargetingPack `
       --add Microsoft.Net.ComponentGroup.4.7.DeveloperTools
    ```
    This command cribbed from the [Visual Studio on a VM][ms-vs-vm-docs] docs.
@@ -88,52 +90,41 @@ Now the graphical setup can begin:
    avoid triggering Visual Studio from wanting a license. If you typed it all
    right, the installer will run and take a while as it downloads several gigs
    of files. If you made a mistake, it will start up and exit pretty quickly
-   but without displaying a clear error message.
-1. Reboot the machine after the install.
+   without displaying a clear error message.
+1. Reboot the machine after the install. (Not 100% sure but I strongly suspect
+   this is necessary.)
 1. Download the [Microsoft Visual Studio Installer Projects][ms-vdproj] Visual
-   Studio extension, using the IE Trusted website trick again. As I recall,
-   the file is downloaded with a `.zip` extension but can be treated as a
-   `.vsix`.
+   Studio extension, using the IE Trusted website trick again. The file is
+   downloaded with a `.zip` extension but can be treated as a `.vsix`.
 1. Install the extension from the command line, as guided by [this post][vsix-post]:
    ```
-   &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\VSIXInstaller.exe" plugin.zip
+   &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\VSIXInstaller.exe" plugin.zip
    ```
 1. Probably doesn't hurt to reboot again.
-1. Apply [the fix for the HRESULT = 8000000A error][hresult-error]
 
 [vs-community]: https://visualstudio.microsoft.com/vs/community/
 [ms-vdproj]: https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2017InstallerProjects
 [vsix-post]: https://developercommunity.visualstudio.com/content/problem/596629/vsixinstaller-from-vs-2019-closing-with-runfromeng.html
+[ie-esc]: https://medium.com/tensult/disable-internet-explorer-enhanced-security-configuration-in-windows-server-2019-a9cf5528be65
+
+If you want to do a test build at this juncture, you’ll need to apply [the fix
+for the HRESULT = 8000000A error][hresult-error]:
+
+```
+cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\VSI\DisableOutOfProcBuild"
+.\DisableOutOfProcBuild.exe
+```
+
 [hresult-error]: https://stackoverflow.com/a/41788791/3760486
 
+We need to apply the same fix on-the-fly in the VMs since the fix is
+user-specific and the Azure provisioning uses a different user.
 
-# Set up the VM as a Build Agent
-
-Now we need to configure the agent to act as an Azure Pipelines agent. Here we
-follow the [Microsoft self-hosted agent docs][ms-selfhosted-docs].
-
-1. Create a Azure DevOps Personal Access Token for a WWT admin user. There is
-   a token stored in the WWT LastPass (that is set to expire in July 2021,
-   although it's unclear if that will matter).
-1. As per the reference docs, set the scope to be “Agent Pools (Read and
-   Manage)”.
-1. As per the docs, go to the organization settings and get a download link
-   for the appropriate agent Windows installer. This link seems to not
-   actually be specific to the DevOps organization.
-1. Copy the URL onto the VM, use the Trusted site setting on IE to allow
-   yourself to download the file, and do so.
-1. Finish agent install as per the docs. Set it up to run as a service in the
-   "default" agent pool.
-1. Go to the Azure DevOps interface for the [WWT organization][azure-devops-wwt].
-   The machine should be in the defaut pool!
-   
-[azure-devops-wwt]: https://dev.azure.com/aasworldwidetelescope/
-
-At this point, upon initial setup, I started testing out the Azure Pipelines
-configuration and got it to the point where it all seemed to be working, with
-code signing enabled through the [.NET SignClient][sign-client].
-
-[sign-client]: https://github.com/dotnet/SignService#client-configuration
+If you want the VM to to act as an Azure Pipelines build agent on its own,
+follow the [Microsoft self-hosted agent docs][ms-selfhosted-docs]. However,
+we’re setting up the image to run in a VM scale set, in which case the agent
+will automatically be provisioned upon VM boot. So for the main workflow you
+should **not** install the agent.
 
 
 # Convert the VM to work in a scale set
@@ -144,7 +135,8 @@ Now we start following the [Microsoft VM scale set agent docs][ms-vmss-docs].
    ```
    &"C:\Windows\System32\sysprep\sysprep.exe" /generalize /oobe /shutdown
    ```
-   This will take a long time and shut down the VM.
+   This will shut down the VM. The docs suggest that the process might take
+   a very long time, but in at least some cases it’s pretty quick.
 1. Deallocate the VM:
    ```
    az vm deallocate --resource-group devops-support --name hostedagentbox
@@ -157,22 +149,25 @@ Now we start following the [Microsoft VM scale set agent docs][ms-vmss-docs].
    ```
    az image create \
      --resource-group devops-support \
-     --name hostedagent-$YYYYMM \
-     --source hostedagentbox
+     --source hostedagentbox \
+     --name hostedagent-$YYYYMM
    ```
 1. Turn it into a VM scale set:
    ```
    az vmss create \
      --resource-group devops-support \
      --name agent-vmss \
-     --image hostedagent-$YYYYMM \
-     --admin-username wwt \
-     --admin-password $PASSWORD \
      --instance-count 2 \
      --disable-overprovision \
      --upgrade-policy-mode manual \
      --load-balancer "" \
-     --vm-sku Standard_DS2_v2
+     --vm-sku Standard_D2s_v3 \
+     --admin-username wwt \
+     --admin-password $PASSWORD \
+     --image hostedagent-$YYYYMM
    ```
-1. Follow the rest of the instructions to wire up the scale set to Azure
-   Pipelines. The agent pool is currently called "Custom Windows".
+   Note: I'd like to use the `Standard_D2_v3` VM SKU, which doesn't call for
+   fancy "premium disk", but when I tried that I got an error about it being
+   required anyway.
+1. Follow the rest of [the instructions][ms-vmss-docs] to wire up the scale set
+   to Azure Pipelines. The agent pool is currently called "Custom Windows".

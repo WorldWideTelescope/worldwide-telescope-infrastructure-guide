@@ -73,6 +73,13 @@ another and are documented elsewhere in this guide. The
 [devops-pipelines]: https://dev.azure.com/aasworldwidetelescope/WWT/_build
 [devops-project]: https://dev.azure.com/aasworldwidetelescope/WWT/
 
+The [wwt-windows-client] repository require the use of a custom “agent” to run
+the builds, the construction of which is documented in [an
+Appendix][vmss-appendix].
+
+[wwt-windows-client]: https://github.com/WorldWideTelescope/wwt-windows-client/
+[vmss-appendix]: @/appendix-build-agent.md
+
 Some WWT repositories may be wired up to invoke other free and public CI/CD
 services. In general, the goal is to transition these to use Azure Pipelines
 through the Azure DevOps organization.
