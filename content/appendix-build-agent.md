@@ -74,11 +74,14 @@ Now the graphical setup can begin:
    won't allow you to download files without jumping through a lot of hoops.
    ([Ref][ie-esc]).
 1. Navigate to the [Visual Studio Community][vs-community] downloads page.
-1. Download the `vs_community.exe` installer stub.
+   (Note: copy-paste of links into the RDP screen should work!)
+1. Download the `vs_community_*.exe` installer stub.
+1. Rename that file to just `vs_community.exe` (just to make copy-paste easier
+   in the next step).
 1. Run it in an elevated Powershell (which should be the default kind, since
    we’re logged in as the admin user):
    ```
-   vs_community.exe --allWorkloads --includeRecommended --passive `
+   .\vs_community.exe --allWorkloads --includeRecommended --passive `
       --add Microsoft.Net.Component.4.7.SDK `
       --add Microsoft.Net.Component.4.7.TargetingPack `
       --add Microsoft.Net.Component.4.6.2.SDK `
@@ -98,9 +101,8 @@ Now the graphical setup can begin:
    downloaded with a `.zip` extension but can be treated as a `.vsix`.
 1. Install the extension from the command line, as guided by [this post][vsix-post]:
    ```
-   &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\VSIXInstaller.exe" plugin.zip
+   &"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\VSIXInstaller.exe" InstallerProjects.zip
    ```
-1. Probably doesn't hurt to reboot again.
 
 [vs-community]: https://visualstudio.microsoft.com/vs/community/
 [ms-vdproj]: https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2017InstallerProjects
@@ -152,7 +154,8 @@ Now we start following the [Microsoft VM scale set agent docs][ms-vmss-docs].
      --source hostedagentbox \
      --name hostedagent-$YYYYMM
    ```
-1. Turn it into a VM scale set:
+1. Turn it into a VM scale set. Note that this command seems to work even in
+   steady-state, when the scale set already exists:
    ```
    az vmss create \
      --resource-group devops-support \
@@ -169,5 +172,6 @@ Now we start following the [Microsoft VM scale set agent docs][ms-vmss-docs].
    Note: I'd like to use the `Standard_D2_v3` VM SKU, which doesn't call for
    fancy "premium disk", but when I tried that I got an error about it being
    required anyway.
-1. Follow the rest of [the instructions][ms-vmss-docs] to wire up the scale set
-   to Azure Pipelines. The agent pool is currently called "Custom Windows".
+1. If setting up from scratch, now follow the rest of [the
+   instructions][ms-vmss-docs] to wire up the scale set to Azure Pipelines. The
+   agent pool is currently called "Custom Windows".
