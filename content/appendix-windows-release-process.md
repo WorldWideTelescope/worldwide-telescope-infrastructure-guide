@@ -17,7 +17,7 @@ infrastructure to do that yet.
 1. In a [wwt-windows-client] checkout on `master`, prepare a [Cranko] release
    request, including release notes for both app and datasets.
 1. Upload any new data files to the cloud, updating the data version in
-   `wwtfiles:catalogs/wwt6_login.txt`.
+   `wwtfiles:catalog/wwt6_login.txt`.
 1. Generate new preloaded data cabinet file using a development build of the
    app:
    1. Delete `~/AppData/Local/American Astronomical Society/WorldWideTelescope/`
@@ -38,6 +38,8 @@ infrastructure to do that yet.
    1. Exit the app
    1. Run the `MakeDataCabinetFile` tool
    1. Upload resulting file to `wwtfiles:devops/datafiles_release.cabinet`
+   1. For posterity, clone the blob to one with a name corresponding to its data
+      version, e.g. `datafiles_2022-01-20.cabinet`.
 1. Push Cranko release request to WWT `rc` branch. This triggers the main
    release processing.
 1. Download the release installer from [GitHub][gh-releases] and duplicate to
@@ -46,10 +48,9 @@ infrastructure to do that yet.
    1. Update `temporary_redirects.map` in [wwt-nginx-core].
    2. Build local Docker image and test locally.
    3. Submit pull request, merge to `master`
-   4. Verify that production service has updated with `curl -I
-      https://worldwidetelescope.org/support/wwtsetup-latest.msi`.
+   4. Verify that production service has updated with `curl -I https://worldwidetelescope.org/support/wwtsetup-latest.msi`.
 1. Update the user website:
-   1. Update either `download/_index.md` or `download/beta.md` in [wwt-user-website].
+   1. Update either `content/download/_index.md` or `content/download/beta.md` in [wwt-user-website].
    2. Preview changes with [Zola].
    3. Submit pull request, merge to `master`.
    4. Verify that user website has updated.
@@ -57,7 +58,7 @@ infrastructure to do that yet.
    1. Pull down [the login file][login6]
    1. Rename it to `wwt6_login.txt`
    1. Update the `ClientVersion:` line
-   1. Upload to `wwtfiles:catalogs/wwt6_login.txt`
+   1. Upload to `wwtfiles:catalog/wwt6_login.txt`
    1. Check that an older install detects the update.
 
 [Cranko]: https://pkgw.github.io/cranko/
